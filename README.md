@@ -1,12 +1,12 @@
-# Models
+# Models #
 
-## User
+## User ##
 
 - id
 - username
 - pasword
 
-## Project
+## Project ##
 
 - id
 - name
@@ -14,15 +14,15 @@
 - ownerId: {type: ObjectId, ref: User}
 
 
-# API
+# API #
 
-## POST /auth/login
-## POST /auth/signup
-## POST /auth/logout
-## GET /auth/me
+## POST /auth/login ##
+## POST /auth/signup ##
+## POST /auth/logout ##
+## GET /auth/me ##
 
-## GET /project
-## GET /project/:id
-## GET /project/search?owner=xxxx
-## POST /project/
-## PUT /project/:id
+## GET /project ##
+## GET /project/:id ##
+## GET /project/search?owner=xxxx ##
+## POST /project/ ##
+## PUT /project/:id ##
