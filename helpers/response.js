@@ -27,9 +27,13 @@ const response = {
   },
 
   unexpectedError: function(req, res, err) {
-    console.log(req.method, req.path, err);
     res.status(500).json({
       error: 'Unexpected error'
+    });
+  },
+  unauthorized: function(req, res, err) {
+    res.status(401).json({
+      error: err || 'Unexpected error'
     });
   }
 };

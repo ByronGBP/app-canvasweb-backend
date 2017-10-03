@@ -15,9 +15,37 @@ router.get('/', function(req, res, next) {
   });
 });
 
+router.post('/', function(req, res, next) {
+  const name = req.body.username;
+  const code = req.body.code;
+  const ownerId = req.body.ownerId;
+
+  if (!ownerId) {
+    return response.unexpectedError(req, res, 'Something wrong while saving.');
+  }
+
+  if (!name) {
+    return response.unprocessable(req, res, 'Name mandatory.');
+  }
+
+  const newPainting = new Painting({
+    name,
+    code,
+    ownerId
+  });
+
+  newPainting.save((err) => {
+    if (err) {
+      return next(err);
+    }
+
+    return response.data(req, res, newPainting.asData());
+  });
+});
+
 router.get('/search', function(req, res, next) {
   if (!req.query.ownerId){
-    response.unexpectedError(req, res, err);
+    response.unprocessable(req, res, 'No id in the query.');
     return;
   }
 
@@ -29,7 +57,7 @@ router.get('/search', function(req, res, next) {
     }
 
     if(!paintings){
-      response.notFound(res);
+      response.notFound(req, res, 'No paintings in database.');
       return;
     }
 
@@ -65,7 +93,6 @@ router.get('/search', function(req, res, next) {
       res.json(data);
     });
   });
-
 });
 
 module.exports = router;

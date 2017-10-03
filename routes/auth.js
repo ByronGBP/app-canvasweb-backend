@@ -73,7 +73,7 @@ authRoutes.get('/loggedin', (req, res, next) => {
     return response.data(req, res, user.asData());
   }
 
-  return response.notFound(req, res);
+  return response.unauthorized(req, res, 'Not logged!');
 });
 
 authRoutes.get('/private', (req, res, next) => {
@@ -82,7 +82,7 @@ authRoutes.get('/private', (req, res, next) => {
     res.json({ message: 'This is a private message' });
     return;
   }
-  res.status(403).json({ message: 'U still stucked in this shit!' });
+  return response.unauthorized(req, res, 'Not logged!');
 });
 
 module.exports = authRoutes;
