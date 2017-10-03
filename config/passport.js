@@ -22,7 +22,7 @@ function configure(passport) {
 
       if (!user || !bcrypt.compareSync(password, user.password)) {
         return next(null, false, {
-          message: 'Something wrong while loggin'
+          error: 'Something wrong while loggin'
         });
       }
 

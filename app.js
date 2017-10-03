@@ -29,7 +29,7 @@ app.use(session({
   store: new MongoStore({
     mongooseConnection: mongoose.connection
   }),
-  cookie : { httpOnly: true, maxAge: 2419200000 }
+  cookie : { httpOnly: true, maxAge: 24192 }
 }));
 
 app.use(cors({

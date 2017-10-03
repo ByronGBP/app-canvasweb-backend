@@ -48,10 +48,10 @@ authRoutes.post('/signup', (req, res, next) => {
 authRoutes.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
-      return next(err);
+      return response.unprocessable(req,res, err);
     }
     if (!user) {
-      return response.notFound(req, res);
+      return response.notFound(req, res, err);
     }
     req.login(user, (err) => {
       if (err) {
