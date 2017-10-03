@@ -2,64 +2,33 @@ const LocalStrategy = require('passport-local').Strategy;
 const User = require('../models/user').User;
 const bcrypt = require('bcrypt');
 
-module.exports = function (passport) {
-
-  passport.serializeUser((loggedInUser, cb) => {
-    cb(null, loggedInUser._id);
+function configure(passport) {
+  passport.serializeUser((user, done) => {
+    done(null, user);
   });
 
-  passport.deserializeUser((userIdFromSession, cb) => {
-    User.findById(userIdFromSession, (err, userDocument) => {
-      if (err) {
-        cb(err);
-        return;
-      }
-
-      cb(null, userDocument);
-    });
+  passport.deserializeUser((user, done) => {
+    user = user ? new User(user) : null;
+    done(null, user);
   });
 
-  passport.use('local-login', new LocalStrategy((username, password, next) => {
-    User.findOne({ username }, (err, foundUser) => {
+  passport.use(new LocalStrategy((username, password, next) => {
+    User.findOne({
+      username
+    }, (err, user) => {
       if (err) {
-        next(err);
-        return;
+        return next(err);
       }
 
-      if (!foundUser || !bcrypt.compareSync(password, foundUser.password)) {
-        next(null, false, { message: 'Something went wrong while logging.' });
-        return;
+      if (!user || !bcrypt.compareSync(password, user.password)) {
+        return next(null, false, {
+          message: 'Something wrong while loggin'
+        });
       }
 
-      next(null, foundUser);
+      return next(null, user);
     });
   }));
+}
 
-  passport.use('local-signup', new LocalStrategy({ passReqToCallback: true }, (req, username, password, next) => {
-    process.nextTick(() => {
-      User.findOne({ username }, '_id', (err, foundUser) => {
-        if (foundUser) {
-          next(null, true, {message: 'Username already exist'});
-          return;
-        }
-
-        const salt     = bcrypt.genSaltSync(10);
-        const hashPass = bcrypt.hashSync(password, salt);
-
-        const theUser = new User({
-          username,
-          password: hashPass
-        });
-
-        theUser.save((err) => {
-          if (err) {
-            next(err);
-            return;
-          }
-
-          next(null, theUser);
-        });
-      });
-    });
-  }));
-};
+module.exports = configure;

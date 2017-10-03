@@ -8,6 +8,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth');
 const session = require('express-session');
 const passport = require('passport');
+const MongoStore = require('connect-mongo')(session);
 
 const response = require('./helpers/response');
 const passportSetup = require('./config/passport');
@@ -22,15 +23,25 @@ const app = express();
 mongoose.connect('mongodb://localhost/app-canvasweb-db');
 
 app.use(session({
-  secret: 'angular auth passport secret shh',
+  secret: 'todo-app',
   resave: true,
   saveUninitialized: true,
+  store: new MongoStore({
+    mongooseConnection: mongoose.connection
+  }),
   cookie : { httpOnly: true, maxAge: 2419200000 }
 }));
+
+app.use(cors({
+  credentials: true,
+  origin: ['http://localhost:4200']
+  })
+);
+
+passportSetup(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(cors());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

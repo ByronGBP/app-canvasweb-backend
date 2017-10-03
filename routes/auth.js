@@ -8,64 +8,81 @@ const User = require('../models/user').User;
 const authRoutes = express.Router();
 
 authRoutes.post('/signup', (req, res, next) => {
-  passport.authenticate('local-login', (err, theUser, failureDetails) => {
-    privateLoginStuff(err, req, res, theUser, failureDetails);
+  const username = req.body.username;
+  const password = req.body.password;
+
+  if (!username || !password) {
+    return response.unprocessable(req, res, 'All fields are mandatory');
+  }
+
+  User.findOne({ username }, 'username', (err, userExist) => {
+    if (err) {
+      return next(err);
+    }
+    if (userExist) {
+      return response.unprocessable(req, res, 'Username already in use.');
+    }
+
+    const salt = bcrypt.genSaltSync(10);
+    const hashPass = bcrypt.hashSync(password, salt);
+
+    const newUser = new User({
+      username,
+      password: hashPass
+    });
+
+    newUser.save((err) => {
+      if (err) {
+        return next(err);
+      }
+      req.login(newUser, (err) => {
+        if (err) {
+          return next(err);
+        }
+        return response.data(req, res, newUser.asData());
+      });
+    });
+  });
+});
+
+authRoutes.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return response.notFound(req, res);
+    }
+    req.login(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      return response.data(req, res, req.user);
+    });
   })(req, res, next);
 });
 
-
-authRoutes.post('/login', (req, res, next) => {
-  passport.authenticate('local-login', (err, theUser, failureDetails) => {
-    privateLoginStuff(err, req, res, theUser, failureDetails);
-  }) (req, res, next);
-});
-
 authRoutes.post('/logout', (req, res, next) => {
   req.logout();
-  res.status(200).json({ message: 'Success' });
-});
-
-authRoutes.post('/logout', (req, res, next) => {
-  req.logout();
-  res.status(200).json({ message: 'Success' });
+  return response.ok(req, res);
 });
 
 authRoutes.get('/loggedin', (req, res, next) => {
   if (req.isAuthenticated()) {
-    res.status(200).json(req.user);
-    return;
+    let user = req.user;
+    return response.data(req, res, user.asData());
   }
 
-  response.unauthorized(req, res, err);
+  return response.notFound(req, res);
 });
 
 authRoutes.get('/private', (req, res, next) => {
+  console.log(req);
   if (req.isAuthenticated()) {
     res.json({ message: 'This is a private message' });
     return;
   }
-
-  res.status(403).json({ message: 'Unauthorized' });
+  res.status(403).json({ message: 'U still stucked in this shit!' });
 });
-
-function privateLoginStuff(err, req, res, theUser, failureDetails) {
-  if (err) {
-    response.unexpectedError(req, res, err);
-    return;
-  }
-
-  if (!theUser) {
-    res.status(401).json(failureDetails);
-    return;
-  }
-
-  req.login(theUser, (err) => {
-    if (err) {
-      response.unexpectedError(req, res, err);
-      return;
-    }
-    res.status(200).json(req.user);
-  });
-}
 
 module.exports = authRoutes;

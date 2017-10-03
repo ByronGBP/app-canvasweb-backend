@@ -21,6 +21,14 @@ const paintingSchema = new Schema({
     }
 });
 
+paintingSchema.methods.asData = function() {
+  return {
+    id: this._id,
+    code: this.code,
+    ownerId: this.ownerId
+  };
+};
+
 const Painting = mongoose.model('Painting', paintingSchema);
 
 module.exports = {

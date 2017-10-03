@@ -27,19 +27,18 @@ router.get('/search', function(req, res, next) {
       response.unexpectedError(req, res, err);
       return;
     }
+
     if(!paintings){
       response.notFound(res);
       return;
     }
 
-
-
     paintings = paintings.filter((painting) => {
       if (String(painting.ownerId._id) === ownerId) { return painting; }
-    });
+      });
 
     if (paintings.length === 0) {
-      response.unexpectedError(req, res, err);
+      response.unprocessable(req, res, `No paintings for id ${ownerId}`);
       return;
     }
 
