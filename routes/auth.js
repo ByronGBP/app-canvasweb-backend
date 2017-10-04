@@ -46,12 +46,13 @@ authRoutes.post('/signup', (req, res, next) => {
 });
 
 authRoutes.post('/login', (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
+  passport.authenticate('local',{ badRequestMessage: 'All fields mandatory' }, (err, user, info) => {
     if (err) {
       return response.unprocessable(req,res, err);
     }
     if (!user) {
-      return response.notFound(req, res, err);
+      var message = info.error ? info.error : info.message;
+      return response.notFound(req, res, message);
     }
     req.login(user, (err) => {
       if (err) {
@@ -77,7 +78,6 @@ authRoutes.get('/loggedin', (req, res, next) => {
 });
 
 authRoutes.get('/private', (req, res, next) => {
-  console.log(req);
   if (req.isAuthenticated()) {
     res.json({ message: 'This is a private message' });
     return;
