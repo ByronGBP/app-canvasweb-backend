@@ -16,22 +16,40 @@
     left: 0px;
   }
   #canvas{
-    width: 100vw;
-    height: 100vh;
+    position: absolute;
+    z-index: 1;
     margin: 0;
     overflow: hidden;
   }
-  #defaultCanvas0 {
-  position:absolute;
-  z-index: -1;
+  #canvasGL{
+    position: absolute;
+    z-index: 2;
+
+    margin: 0;
+    overflow: hidden;
   }
+
 </style>
+<script
+src="https://code.jquery.com/jquery-3.2.1.min.js"
+integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+crossorigin="anonymous"></script>
 </head>
 <body>
+
   <canvas id='canvas'></canvas>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.14/addons/p5.dom.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.14/addons/p5.sound.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.14/p5.min.js"></script>
+  <canvas id='canvasGL'></canvas>
+  <script>
+
+    var ctx = document.getElementById('canvas').getContext('2d')
+    ctx.canvas.width  = window.innerWidth;
+    ctx.canvas.height = window.innerHeight;
+
+    var ctxGL = document.getElementById('canvasGL').getContext('webgl')
+    ctxGL.canvas.width  = window.innerWidth;
+    ctxGL.canvas.height = window.innerHeight;
+
+  </script>
   <script> <%- painting.code %></script>
 
 </body>
