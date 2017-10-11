@@ -1,3 +1,4 @@
+const dotenv = require('dotenv');
 const express = require('express');
 const path = require('path');
 const logger = require('morgan');
@@ -21,7 +22,7 @@ const render = require('./routes/render');
 passportSetup(passport);
 const app = express();
 
-mongoose.connect(process.env.MONGO_DB_);
+mongoose.connect('mongodb://localhost/app-canvasweb-db');
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -38,7 +39,7 @@ app.use(session({
 
 app.use(cors({
   credentials: true,
-  origin: ['http://localhost:8080']
+  origin: ['http://localhost:4200']
   })
 );
 
