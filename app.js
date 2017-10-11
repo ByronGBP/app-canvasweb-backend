@@ -21,7 +21,7 @@ const render = require('./routes/render');
 passportSetup(passport);
 const app = express();
 
-mongoose.connect('mongodb://localhost/app-canvasweb-db');
+mongoose.connect(process.env.MONGO_DB_);
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -38,7 +38,7 @@ app.use(session({
 
 app.use(cors({
   credentials: true,
-  origin: ['http://localhost:4200']
+  origin: ['http://localhost:8080']
   })
 );
 
